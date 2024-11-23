@@ -62,6 +62,7 @@ const Home = () => {
       const response = await axiosInstance.get('/get-all-notes')
       if (response.data && response.data.notes) setAllNotes(response.data.notes)
     } catch (error) {
+      navigate('/login')
       console.log('An unexpected error, please try again')
     }
   }
