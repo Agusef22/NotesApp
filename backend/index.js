@@ -148,7 +148,13 @@ app.get('/get-user', authenticateToken, async (req, res) => {
 
 app.post('/add-note', authenticateToken, async (req, res) => {
   const { title, content, tags } = req.body
-  const { user } = req.user
+  const user = req.user
+
+  if (!user) {
+    return res
+      .status(400)
+      .json({ error: true, message: 'User not found in request' })
+  }
 
   if (!title)
     return res.status(400).json({ error: true, message: 'Title is required' })
@@ -172,6 +178,7 @@ app.post('/add-note', authenticateToken, async (req, res) => {
       message: 'Note added successfully'
     })
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
       error: true,
       message: 'Internal Server Error'
@@ -182,7 +189,7 @@ app.post('/add-note', authenticateToken, async (req, res) => {
 app.put('/edit-note/:noteId', authenticateToken, async (req, res) => {
   const noteId = req.params.noteId
   const { title, content, tags, isPinned } = req.body
-  const { user } = req.user
+  const user = req.user
 
   if (!title && !content && !tags)
     return res.status(400).json({
@@ -235,7 +242,7 @@ app.get('/get-all-notes/', authenticateToken, async (req, res) => {
 
 app.delete('/delete-note/:noteId', authenticateToken, async (req, res) => {
   const noteId = req.params.noteId
-  const { user } = req.user
+  const user = req.user
 
   try {
     const note = await Note.findOne({ _id: noteId, userId: user._id })
@@ -256,7 +263,7 @@ app.delete('/delete-note/:noteId', authenticateToken, async (req, res) => {
 app.put('/update-note-pinned/:noteId', authenticateToken, async (req, res) => {
   const noteId = req.params.noteId
   const { isPinned } = req.body
-  const { user } = req.user
+  const user = req.user
 
   try {
     const note = await Note.findOne({ _id: noteId, userId: user._id })
@@ -281,7 +288,7 @@ app.put('/update-note-pinned/:noteId', authenticateToken, async (req, res) => {
 })
 
 app.get('/search-notes/', authenticateToken, async (req, res) => {
-  const { user } = req.user
+  const user = req.user
   const { query } = req.query
 
   if (!query)
