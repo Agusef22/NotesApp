@@ -51,10 +51,14 @@ const Login = () => {
 
   return (
     <div>
-      <Navbar />
+      <div className='flex items-center justify-center mt-28 gap-16'>
+        <div className=''>
+          <h2 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl'>
+            Notes App
+          </h2>
+        </div>
 
-      <div className='flex items-center justify-center mt-28'>
-        <div className='w-96 border rounded bg-white px-7 py-10'>
+        <div className='w-96 border rounded bg-white px-7 py-12'>
           <form onSubmit={handleLogin}>
             <h4 className='text-2xl mb-7'>Login</h4>
 
