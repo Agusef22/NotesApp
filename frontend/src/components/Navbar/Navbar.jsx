@@ -12,6 +12,10 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
     navigate('/login')
   }
 
+  const adminNavigate = () => {
+    navigate('/Admin')
+  }
+
   const handleSearch = () => {
     if (searchQuery) {
       onSearchNote(searchQuery)
@@ -35,8 +39,20 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
         handleSearch={handleSearch}
         onClearSearch={onClearSearch}
       />
+      <div className='flex gap-4'>
+        {userInfo?.email === 'Admin@gmail.com' ? (
+          <button
+            className='text-sm text-slate-700 underline'
+            onClick={adminNavigate}
+          >
+            Admin
+          </button>
+        ) : (
+          ''
+        )}
 
-      <ProfileInfo userInfo={userInfo} onLogout={onLogout} />
+        <ProfileInfo userInfo={userInfo} onLogout={onLogout} />
+      </div>
     </div>
   )
 }

@@ -4,7 +4,10 @@ const config = require('./config.json')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
-mongoose.connect(config.connectionString)
+mongoose
+  .connect(config.connectionString)
+  .then(() => console.log('Conexión exitosa a MongoDB'))
+  .catch((error) => console.error('Error al conectar a MongoDB', error))
 
 const User = require('./models/user.model')
 const Note = require('./models/note.model')
@@ -182,6 +185,61 @@ app.post('/add-note', authenticateToken, async (req, res) => {
     return res.status(500).json({
       error: true,
       message: 'Internal Server Error'
+    })
+  }
+})
+
+app.get('/users', authenticateToken, async (req, res) => {
+  const adminEmail = 'Admin@gmail.com'
+
+  if (req.user.email !== adminEmail) {
+    return res.status(403).json({
+      error: true,
+      message:
+        'Unauthorized. Only the administrator can access this information.'
+    })
+  }
+
+  try {
+    const users = await User.find({}, '-password')
+    return res.json(users)
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: 'Error getting users.'
+    })
+  }
+})
+
+app.delete('/delete-user/:id', authenticateToken, async (req, res) => {
+  const adminEmail = 'Admin@gmail.com'
+
+  if (req.user.email !== adminEmail) {
+    return res.status(403).json({
+      error: true,
+      message:
+        'Unauthorized. Only the administrator can access this information.'
+    })
+  }
+
+  const userId = req.params.id
+
+  try {
+    const user = await User.findByIdAndDelete(userId)
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        message: 'User Not Found'
+      })
+    }
+    return res.json({
+      error: false,
+      message: 'User Deleted'
+    })
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: 'Error Delete User'
     })
   }
 })
